@@ -1,33 +1,21 @@
 const express = require('express')
 const router = express.Router();
 const connection = require('../db');
-
-// router.route("/")
-//     .get((req, res) => {
-//         const query = 'SELECT * FROM TBL_FEED';
-//         connection.query(query, (err, results) => {
-//             if (err) {
-//                 console.error('쿼리 실행 실패:', err);
-//                 return res.json({success : false , meesage : "db오류"})
-//             }
-//             res.json(results); 
-//         });
-//     });
-
+const jwtAuthentication = require('../jwtAuth');
 
 router.route("/")
-  .get((req, res)=>{
+  .get(jwtAuthentication, (req, res)=>{
       const query = 'SELECT * FROM TBL_FEED';
       connection.query(query, (err, results) => {
         if (err) {
           console.error('피드 조회 실패:', err);
           return res.json({ success: false, message: '서버 오류가 발생했습니다.' });
         }
-    
+        
         res.json({ success: true, list: results });
       });
   })
-
+  
 router.route("/:id")
   .delete((req, res)=>{
     const id = req.params.id;

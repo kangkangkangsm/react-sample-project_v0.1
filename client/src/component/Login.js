@@ -13,31 +13,23 @@ function Login() {
   }, []);
 
   async function fnLogin(){
-    // 로그인 버튼 누르면
-    // fnLogin 함수에서 콘솔로 입력한 이메일, 비밀번호 출력
-    // console.log(emailRef.current.value);
-    // console.log(pwdRef.current.value);
     try{
-      const res = await axios.post("http://localhost:3100/user", 
-        { email : emailRef.current.value,
-          password : pwdRef.current.value
-        });
-        if(res.data.success){
-          console.log(res);
-          //세션 
-          localStorage.setItem("token", res.data.token);
-          // navigate("/main");
-        } else {
-          alert("아이디/비밀번호 다시 확인");
-        }
-
-        
-    } catch(err){
-      console.log("오류 발생");
-    }
-    
-
-  }
+     const res = await axios.post("http://localhost:3100/user", 
+       { email : emailRef.current.value,
+         password : pwdRef.current.value
+       });
+   
+       if(res.data.success){
+     // 리턴된 토큰을 localStorage에 저장
+         localStorage.setItem("token", res.data.token);
+         navigate("/main");
+       } else {
+         alert("아이디/비밀번호 다시 확인");
+       }      
+   } catch(err){
+     console.log("오류 발생");
+   }   
+ }
 
   return (
     <Box

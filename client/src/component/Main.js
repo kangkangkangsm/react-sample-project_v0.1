@@ -3,10 +3,12 @@ import axios from 'axios';
 import { Box, Typography, Paper, IconButton } from '@mui/material';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import DeleteIcon from '@mui/icons-material/Delete';
+// 세션
+import { jwtDecode } from 'jwt-decode';
 
 const Main = () => {
   const [feeds, setFeeds] = useState([]);
-
+  const [user, setUser] = useState(null); // 유저 정보를 담을 상태
   async function fndelete(id) {
     //console.log(id);
     if(!window.confirm("삭제 하시겠습니까?")){
@@ -38,23 +40,40 @@ const Main = () => {
     }
   }
   async function fnList() {
+    const token = localStorage.getItem("token"); // 토큰 꺼내기
     try {
-      const res = await axios.get('http://localhost:3100/feed');
+      const res = await axios.get('http://localhost:3100/feed', {
+        headers : {token} // 헤더에 토큰 담아서 전송
+      });
       if (res.data.success) {
         setFeeds(res.data.list);
+        console.log(res.data.list);
       } else {
         console.log("에러");
       }
     } catch (err) {
       console.log("에러");
-    }
-  }
+    } 
+};
   
 
+useEffect(() => {
   fnList();
-  useEffect(() => {
-  }, [fndelete]);
+  // 세션
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const decodedToken = jwtDecode(token); // jwt 디코딩
+      setUser(decodedToken); // 디코딩한 유저 정보를 상태로 저장
+    } catch (err) {
+      console.log("토큰 디코딩 에러:", err);
+    }
+  }
+}, []);
 
+  useEffect(() => {
+  
+  }, [fndelete]);
   return (
     <Box
       display="flex"
@@ -64,6 +83,7 @@ const Main = () => {
       padding={3}
       sx={{ backgroundColor: '#f0f4f8' }}
     >
+      User ID: {user.userId}
       {feeds.map((feed) => (
         <Paper key={feed.id} sx={{ width: '100%', maxWidth: '600px', mb: 2, p: 2 }}>
           <Typography variant="h6" gutterBottom>

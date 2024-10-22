@@ -8,7 +8,7 @@ import Menu from './component/Menu';
 import Add from './component/Add';
 import MyPage from './component/MyPage';
 import Logout from './component/Logout';
-
+import { jwtDecode } from 'jwt-decode';
 const drawerWidth = 240;
 
 const Layout = ({ children }) => {
@@ -18,10 +18,10 @@ const Layout = ({ children }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />     
-        <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar style={{backgroundColor : 'white', color:'black'}}position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar>
             <Typography variant="h6" noWrap>
-              SNS 시스템
+              에스엔에스 
             </Typography>
           </Toolbar>
         </AppBar>              

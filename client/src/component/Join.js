@@ -18,7 +18,7 @@ function Join() {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3100/user/insert", {
+      const res = await axios.post("http://localhost:3100/user/join", {
         email, pwd
       }); // {email : eamil, pwd : pwd}
 
@@ -27,8 +27,6 @@ function Join() {
       } else {
         alert("회원가입 실패!");
       }
-
-
     } catch (error) {
       console.log("서버 호출 중 오류 발생");
     }
