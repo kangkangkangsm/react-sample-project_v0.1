@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'; // useState 임포트
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import { Box, CssBaseline, Drawer, Toolbar, AppBar, Typography } from '@mui/material';
 import Login from './component/Login';
 import Join from './component/Join';
@@ -9,22 +9,40 @@ import Add from './component/Add';
 import MyPage from './component/MyPage';
 import Logout from './component/Logout';
 import { jwtDecode } from 'jwt-decode';
+
 const drawerWidth = 240;
 
 const Layout = ({ children }) => {
+  const [user, setUser] = useState(null); // 여기에서 useState 사용
   const location = useLocation();
   const hideMenu = location.pathname === '/login' || location.pathname === '/join';
+  
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        setUser(decodedToken);
+        console.log(user);
+      } catch (err) {
+        console.log("토큰 디코딩 에러:", err);
+      }
+    }
+  }, []);
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <CssBaseline />     
-        <AppBar style={{backgroundColor : 'white', color:'black'}}position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-          <Toolbar>
-            <Typography variant="h6" noWrap>
-              에스엔에스 
-            </Typography>
-          </Toolbar>
-        </AppBar>              
+      <CssBaseline />
+      <AppBar style={{ backgroundColor: 'white', color: 'black' }} position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="h6" noWrap>
+            에스엔에스
+          </Typography>
+          <Typography variant="h6" noWrap>
+          {user && user.name}({user && user.userId}) 
+          </Typography>
+        </Toolbar>
+      </AppBar>
       {!hideMenu && (
         <Drawer
           variant="permanent"
@@ -45,8 +63,8 @@ const Layout = ({ children }) => {
           bgcolor: 'background.default',
           p: 3,
           ml: hideMenu ? 0 : `${drawerWidth}px`,
-          maxWidth: 'lg', 
-          margin: 'auto', 
+          maxWidth: 'lg',
+          margin: 'auto',
         }}
       >
         <Toolbar />
@@ -55,7 +73,6 @@ const Layout = ({ children }) => {
     </Box>
   );
 };
-
 
 const App = () => {
   return (
@@ -68,6 +85,8 @@ const App = () => {
           <Route path="/register" element={<Add />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Layout>
     </Router>
