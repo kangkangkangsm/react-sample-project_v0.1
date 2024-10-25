@@ -6,7 +6,8 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
   const userIdRef = useRef();
   const passwordRef = useRef();
-  const navigate = useNavigate();
+  const navigateL = useNavigate();
+  
 
   useEffect(()=>{
     userIdRef.current.focus();
@@ -23,7 +24,7 @@ function Login() {
        if(res.data.success){
      // 리턴된 토큰을 localStorage에 저장
          localStorage.setItem("token", res.data.token);
-         navigate("/main");
+         navigateL("/main");
        } else {
          alert("아이디/비밀번호 다시 확인");
        }      

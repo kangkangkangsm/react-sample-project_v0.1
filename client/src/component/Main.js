@@ -1,11 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Paper, IconButton } from '@mui/material';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { jwtDecode } from 'jwt-decode';
+import {
+  Grid2,
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Box,
+  Card,
+  CardMedia,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  DialogActions,
+  Button,
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-const Main = () => {
+
+function Feed() {
+  const [open, setOpen] = useState(false);
+  const [selectedFeed, setSelectedFeed] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
   const [feeds, setFeeds] = useState([]);
   const [user, setUser] = useState(null);
 
@@ -23,38 +49,6 @@ const Main = () => {
       console.log("에러");
     }
   };
-
-  const fndelete = async (id) => {
-    if (!window.confirm("삭제 하시겠습니까?")) {
-      return;
-    }
-    try {
-      const res = await axios.delete(`http://localhost:3100/feed/${id}`);
-      if (res.data.success) {
-        alert("삭제 성공");
-        fnList();
-      } else {
-        alert("삭제 실패");
-      }
-    } catch (err) {
-      console.log("에러 발생:", err);
-    }
-  };
-
-  const fnLike = async (id) => {
-    try {
-      const res = await axios.put(`http://localhost:3100/feed/like/${id}`);
-      if (res.data.success) {
-        console.log("조아요 성공");
-        fnList();
-      } else {
-        console.log("조아요 실패");
-      }
-    } catch (err) {
-      console.log("에러 발생:", err);
-    }
-  };
-
   useEffect(() => {
     fnList();
     const token = localStorage.getItem("token");
@@ -68,40 +62,125 @@ const Main = () => {
     }
   }, []);
 
-  return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      padding={3}
-      sx={{ backgroundColor: '#f0f4f8' }}
-    >
-      {feeds.map((feed) => (
-        <Paper key={feed.id} sx={{ width: '100%', maxWidth: '600px', mb: 2, p: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            {feed.userId_fc}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            {feed.content}
-          </Typography>
-          <Typography variant="caption" color="textSecondary" gutterBottom>
-            {new Date(feed.cdatetime).toLocaleString()}
-          </Typography>
-          <Box display="flex" justifyContent="space-between" mt={1}>
-            <Box>
-              <IconButton color="primary" onClick={() => fnLike(feed.id)}>
-                <ThumbUpIcon /> <span style={{ marginLeft: '10px' }}>{feed.favorite}</span>
-              </IconButton>
-              <IconButton color="secondary" onClick={() => fndelete(feed.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </Box>
-          </Box>
-        </Paper>
-      ))}
-    </Box>
-  );
-};
+  const handleClickOpen = (feed) => {
+    setSelectedFeed(feed);
+    setOpen(true);
+    setComments([
+      { id: 'user1', text: '멋진 사진이에요!' },
+      { id: 'user2', text: '이 장소에 가보고 싶네요!' },
+      { id: 'user3', text: '아름다운 풍경이네요!' },
+    ]); // 샘플 댓글 추가
+    setNewComment(''); // 댓글 입력 초기화
+  };
 
-export default Main;
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedFeed(null);
+    setComments([]); // 모달 닫을 때 댓글 초기화
+  };
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      setComments([...comments, { id: 'currentUser', text: newComment }]); // 댓글 작성자 아이디 추가
+      setNewComment('');
+    }
+  };
+
+  return (
+    <Container maxWidth="md">
+      {/* <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6">나의피드</Typography>
+        </Toolbar>
+      </AppBar> */}
+
+      <Box mt={4}>
+        <Grid2 container spacing={3}>
+          {feeds.map((feed) => (
+            <Grid2 xs={12} sm={6} md={4} key={feed.id}>
+              <Card>
+              <CardMedia
+  component="img"
+  height="200"
+  image={feed.img_path ? `http://localhost:3100/img/${feed.img_path.replace(/\\/g, '/').split('/').pop()}` : 'http://localhost:3100/img/default-image.jpg'}
+  alt={feed.content}
+  onClick={handleClickOpen}
+  style={{ cursor: 'pointer' }}
+/>
+
+                <CardContent>
+                  <Typography variant="body2" color="textSecondary">
+                    {feed.content}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid2>
+          ))}
+        </Grid2>
+      </Box>
+
+      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg"> {/* 모달 크기 조정 */}
+        <DialogTitle>
+          {selectedFeed?.title}
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleClose}
+            aria-label="close"
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex' }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="body1">{selectedFeed?.description}</Typography>
+            {selectedFeed?.image && (
+              <img
+                src={selectedFeed.image}
+                alt={selectedFeed.title}
+                style={{ width: '100%', marginTop: '10px' }}
+              />
+            )}
+          </Box>
+
+          <Box sx={{ width: '300px', marginLeft: '20px' }}>
+            <Typography variant="h6">댓글</Typography>
+            <List>
+              {comments.map((comment, index) => (
+                <ListItem key={index}>
+                  <ListItemAvatar>
+                    <Avatar>{comment.id.charAt(0).toUpperCase()}</Avatar> {/* 아이디의 첫 글자를 아바타로 표시 */}
+                  </ListItemAvatar>
+                  <ListItemText primary={comment.text} secondary={comment.id} /> {/* 아이디 표시 */}
+                </ListItem>
+              ))}
+            </List>
+            <TextField
+              label="댓글을 입력하세요"
+              variant="outlined"
+              fullWidth
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}           
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddComment}
+              sx={{ marginTop: 1 }}
+            >
+              댓글 추가
+            </Button>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            닫기
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
+}
+
+export default Feed;

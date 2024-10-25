@@ -16,7 +16,6 @@ const Layout = ({ children }) => {
   const [user, setUser] = useState(null); // 여기에서 useState 사용
   const location = useLocation();
   const hideMenu = location.pathname === '/login' || location.pathname === '/join';
-  
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -27,8 +26,10 @@ const Layout = ({ children }) => {
       } catch (err) {
         console.log("토큰 디코딩 에러:", err);
       }
+    }else{
+      setUser(null);
     }
-  }, []);
+  });
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -39,7 +40,7 @@ const Layout = ({ children }) => {
             에스엔에스
           </Typography>
           <Typography variant="h6" noWrap>
-          {user && user.name}({user && user.userId}) 
+          {!user ? '로그인하세요' : `${user.name} (${user.userId})`}
           </Typography>
         </Toolbar>
       </AppBar>

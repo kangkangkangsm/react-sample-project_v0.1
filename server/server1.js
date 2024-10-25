@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 
 app.use("/user", require("./route/userRoute"));
 app.use("/feed", require("./route/feedRoute"));
+app.use("/img", require("./route/imgRoute"));
 app.listen(3100, () => {
     console.log("server start!");
 });

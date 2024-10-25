@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, TextField, IconButton, Button, Divider } from '@mui/material';
+import { Box, Typography, TextField, Button, Divider } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import axios from 'axios';  // axios import 추가
-import {jwtDecode} from 'jwt-decode';  // jwtDecode import 수정
+import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const AddPost = () => {
   const [image, setImage] = useState(null);
   const [user, setUser] = useState(null);
   const [content, setContent] = useState('');
   const [images, setImages] = useState([]);
+  const navigate = useNavigate();
   const contentRef = useRef(null);
 
   const imageChange = (e) => {
     setImages(e.target.files);
-    setImage(URL.createObjectURL(e.target.files[0]));  // 첫 번째 이미지를 미리보기로 설정
+    setImage(URL.createObjectURL(e.target.files[0])); // 첫 번째 이미지를 미리보기로 설정
   };
 
   const fnSubMit = async (e) => {
@@ -33,6 +33,7 @@ const AddPost = () => {
         },
       });
       alert(response.data.message);
+      navigate("/main");
     } catch (error) {
       console.error('피드 등록 오류:', error);
     }
@@ -77,7 +78,7 @@ const AddPost = () => {
           </Typography>
           <Divider />
           <Box mt={2} display="flex" alignItems="center">
-            <Typography variant="subtitle1">  {user && user.name}({user && user.userId}) </Typography>
+            <Typography variant="subtitle1">  {user && user.name} ({user && user.userId}) </Typography>
           </Box>
           <TextField
             placeholder="문구 입력..."
@@ -94,14 +95,6 @@ const AddPost = () => {
             {content?.length || 0}/2200
           </Typography>
           <Divider sx={{ my: 2 }} />
-          <IconButton color="primary">
-            <LocationOnIcon />
-            <Typography variant="body2" sx={{ marginLeft: 1 }}>위치 추가</Typography>
-          </IconButton>
-          <IconButton color="primary">
-            <PersonAddIcon />
-            <Typography variant="body2" sx={{ marginLeft: 1 }}>사람 태그</Typography>
-          </IconButton>
         </Box>
         <Box>
           <Button variant="contained" color="primary" onClick={fnSubMit} fullWidth>
