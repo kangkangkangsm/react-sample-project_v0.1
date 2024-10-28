@@ -8,6 +8,7 @@ import Menu from './component/Menu';
 import Add from './component/Add';
 import MyPage from './component/MyPage';
 import Logout from './component/Logout';
+import Test from './component/test';
 import { jwtDecode } from 'jwt-decode';
 
 const drawerWidth = 240;
@@ -22,14 +23,14 @@ const Layout = ({ children }) => {
       try {
         const decodedToken = jwtDecode(token);
         setUser(decodedToken);
-        console.log(user);
+
       } catch (err) {
         console.log("토큰 디코딩 에러:", err);
       }
     }else{
       setUser(null);
     }
-  });
+  },[]);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -86,6 +87,7 @@ const App = () => {
           <Route path="/register" element={<Add />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/test" element={<Test />} />
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>

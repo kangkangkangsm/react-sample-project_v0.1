@@ -31,6 +31,12 @@ const Menu = () => {
         </ListItemIcon>
         <ListItemText primary="마이페이지" />
       </ListItem>
+
+      <ListItem button onClick={() => navigate('/test')}>
+        <ListItemIcon>
+        </ListItemIcon>
+        <ListItemText primary="⭐테스트⭐" />
+     </ListItem>
       
       <ListItem button onClick={() => navigate('/logout')}>
         <ListItemIcon>
@@ -38,6 +44,8 @@ const Menu = () => {
         </ListItemIcon>
         <ListItemText primary="로그아웃" />
       </ListItem>
+
+
     </List>
   );
 };

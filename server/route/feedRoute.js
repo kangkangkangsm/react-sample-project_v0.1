@@ -24,48 +24,49 @@ router.use('/img', express.static(path.join(__dirname, '../img')));
 
 // 피드 조회 및 생성 엔드포인트
 router.route("/")
+.post(upload.array('images'), (req, res) => {
+  console.log(req.body);
+  const { content, userId } = req.body; // userId를 req.body에서 추출
+  const feedQuery = 'INSERT INTO rp_tbl_feed (userId_FC, content) VALUES (?, ?)';
+
+  connection.query(feedQuery, [userId, content], (err, feedResult) => {
+    if (err) {
+      console.error('피드 등록 실패:', err);
+      return res.status(500).json({ success: false, message: "피드 등록 실패" });
+    }
+
+    const feed_id = feedResult.insertId;
+    const files = req.files;
+
+    if (!files || files.length === 0) {
+      return res.json({ success: true, message: "피드 등록 완료" });
+    }
+
+    const imgQuery = 'INSERT INTO rp_tbl_feed_img (feed_id, img_path) VALUES ?';
+    const imgData = files.map(file => [feed_id, file.path]);
+
+    connection.query(imgQuery, [imgData], (err) => {
+      if (err) {
+        console.error('이미지 저장 실패:', err);
+        return res.status(500).json({ success: false, message: "이미지 저장 실패" });
+      }
+
+      res.json({ success: true, message: "피드 및 이미지가 성공적으로 저장되었습니다!" });
+    });
+  });
+})
   .get(jwtAuthentication, (req, res) => {
     const query = `
-      SELECT * FROM rp_tbl_feed AS rtf
-      LEFT JOIN rp_tbl_feed_img AS rtfi ON rtf.id = rtfi.feed_id
-    `;
+    SELECT rtf.*, GROUP_CONCAT(rtfi.img_path) AS img_paths
+    FROM rp_tbl_feed rtf
+    LEFT JOIN rp_tbl_feed_img rtfi ON rtf.id = rtfi.feed_id
+    GROUP BY rtf.id `;
     connection.query(query, (err, results) => {
       if (err) {
         console.error('피드 조회 실패:', err);
         return res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
       }
       res.json({ success: true, list: results });
-    });
-  })
-  .post(upload.array('images'), (req, res) => {
-    const { content } = req.body;
-    const feedQuery = 'INSERT INTO rp_tbl_feed (userId_FC, content) VALUES (?, ?)';
-    const userId = "test"; // 실제 사용자 ID로 대체 필요
-
-    connection.query(feedQuery, [userId, content], (err, feedResult) => {
-      if (err) {
-        console.error('피드 등록 실패:', err);
-        return res.status(500).json({ success: false, message: "피드 등록 실패" });
-      }
-
-      const feed_id = feedResult.insertId;
-      const files = req.files;
-
-      if (!files || files.length === 0) {
-        return res.json({ success: true, message: "피드 등록 완료" });
-      }
-
-      const imgQuery = 'INSERT INTO rp_tbl_feed_img (feed_id, img_path) VALUES ?';
-      const imgData = files.map(file => [feed_id, file.path]);
-
-      connection.query(imgQuery, [imgData], (err) => {
-        if (err) {
-          console.error('이미지 저장 실패:', err);
-          return res.status(500).json({ success: false, message: "이미지 저장 실패" });
-        }
-
-        res.json({ success: true, message: "피드 및 이미지가 성공적으로 저장되었습니다!" });
-      });
     });
   });
 

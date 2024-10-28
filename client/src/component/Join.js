@@ -17,6 +17,7 @@ function Join() {
   const [userPwdCHeckError, setuserPwdCHeckError] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userEmailError, setuserEmailError] = useState('');
+  const [join2, setJoin2] = useState(1);
   const navigate = useNavigate();
   
 //회원가입 
@@ -29,7 +30,7 @@ async function fnJoin() {
   }
   if(!userPwd || userPwdError){
     alert("비밀번호 확인하세요");
-    pwdRef.current.focus();
+    pwdRef.current.focus(); 
     return;
   }
   if(!userPwdCheck || userPwdCHeckError){
