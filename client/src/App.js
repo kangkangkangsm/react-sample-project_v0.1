@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
     }else{
       setUser(null);
     }
-  },[]);
+  });
 
   return (
     <Box sx={{ display: 'flex' }}>

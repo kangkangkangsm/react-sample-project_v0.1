@@ -41,21 +41,21 @@ function MyPage() {
           <Grid container spacing={2} sx={{ marginTop: 2 }}>
             <Grid item xs={4} textAlign="center">
               <Typography variant="h6">팔로워</Typography>
-              <Typography variant="body1">150</Typography>
+              <Typography variant="body1">0</Typography>
             </Grid>
             <Grid item xs={4} textAlign="center">
               <Typography variant="h6">팔로잉</Typography>
-              <Typography variant="body1">100</Typography>
+              <Typography variant="body1">0</Typography>
             </Grid>
             <Grid item xs={4} textAlign="center">
               <Typography variant="h6">게시물</Typography>
-              <Typography variant="body1">50</Typography>
+              <Typography variant="body1">2</Typography>
             </Grid>
           </Grid>
           <Box sx={{ marginTop: 3 }}>
             <Typography variant="h6">내 소개</Typography>
             <Typography variant="body1">
-              안녕하세요! SNS를 통해 친구들과 소통하고 있습니다. 사진과 일상을 공유하는 것을 좋아해요.
+              리액트프로젝트
             </Typography>
           </Box>
         </Paper>
